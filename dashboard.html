@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spontea · Panel del asistente IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--wine:#4A1526;--wine2:#6B2238;--amber:#C9892B;--stone:#F3F1EE;--ink:#201A1C;--mute:#7A7074;--wa:#128C5A;--line:#E2DDD8;--red:#B3322F}
+*{box-sizing:border-box;margin:0}
+body{font:14px/1.5 Inter,system-ui,sans-serif;color:var(--ink);background:var(--stone);display:flex;min-height:100vh}
+button{font:inherit;cursor:pointer}
+aside{width:230px;background:var(--wine);color:#fff;padding:24px 16px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh}
+.logo{font:600 28px 'Cormorant Garamond',Georgia,serif;letter-spacing:.04em;padding:0 10px 4px}
+aside small{padding:0 10px 18px;color:#E7D6DB;font-size:12px}
+.nav{background:none;border:0;color:#E7D6DB;text-align:left;padding:10px 12px;border-radius:6px;display:flex;justify-content:space-between}
+.nav:hover{background:#FFFFFF14}.nav.on{background:#fff;color:var(--wine);font-weight:600}
+.nav i{font-style:normal;background:var(--amber);color:#201508;border-radius:10px;padding:0 8px;font-size:12px;font-weight:600}
+.back{margin-top:auto;color:#E7D6DB;font-size:13px;padding:10px 12px;text-decoration:none;border-top:1px solid #FFFFFF26}
+main{flex:1;padding:26px 32px;min-width:0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+h1{font:600 34px 'Cormorant Garamond',Georgia,serif;color:var(--wine)}
+.pill{background:#FFF3C9;color:#6B5200;padding:4px 12px;border-radius:14px;font-size:12px}
+select,input[type=text]{border:1px solid var(--line);border-radius:6px;padding:8px 10px;background:#fff;font:inherit}
+.sub{color:var(--mute);margin-bottom:20px}
+.v{display:none}.v.on{display:block}
+.card{background:#fff;border-radius:8px;padding:18px;box-shadow:0 1px 3px #0001}
+.card h3{font:600 20px 'Cormorant Garamond',serif;color:var(--wine);margin-bottom:10px}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:16px}
+.kp b{display:block;font:600 34px 'Cormorant Garamond',serif;color:var(--wine);line-height:1.1}.kp span{color:var(--mute);font-size:12px}
+.g2{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-bottom:16px}
+.bars{display:flex;align-items:flex-end;gap:4px;height:150px}.bars i{flex:1;background:var(--wine2);border-radius:2px 2px 0 0;min-height:3px}.bars i.n{background:var(--amber)}
+.ax{display:flex;justify-content:space-between;color:var(--mute);font-size:11px;margin-top:4px}
+.fn{margin:8px 0}.fn div{background:var(--wine2);color:#fff;padding:6px 10px;border-radius:4px;font-size:12px;white-space:nowrap}
+table{width:100%;border-collapse:collapse}th{text-align:left;color:var(--mute);font-weight:500;font-size:12px}td,th{padding:9px 8px;border-bottom:1px solid var(--line)}
+.tag{display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;background:var(--stone)}
+.open{background:#DDF3E8;color:#0B6B45}.human{background:#FFE9C7;color:#8A5A00}.closed{background:#E9E6E3;color:#6B6165}.alta{background:#F8DAD9;color:var(--red)}
+.inbox{display:grid;grid-template-columns:320px 1fr;gap:16px;height:calc(100vh - 190px);min-height:460px}
+.list{overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chips button{border:1px solid var(--line);background:#fff;border-radius:16px;padding:5px 12px}.chips button.on{background:var(--wine);color:#fff;border-color:var(--wine)}
+.it{background:#fff;border:1px solid transparent;border-radius:8px;padding:10px 12px;text-align:left;width:100%}.it.on{border-color:var(--wine)}.it b{display:flex;justify-content:space-between}.it small{color:var(--mute);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.det{display:flex;flex-direction:column;padding:0;overflow:hidden}
+.dh{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.ms{flex:1;overflow-y:auto;padding:16px;background:#EFEAE2;display:flex;flex-direction:column;gap:8px}
+.m{max-width:75%;padding:8px 12px;border-radius:10px;box-shadow:0 1px 1px #0002}.c{background:#fff;align-self:flex-start}.a{background:#D9F5C8;align-self:flex-end}.p{background:#FFE9C7;align-self:flex-end}.s{align-self:center;background:#FFF3C9;color:#6B5200;font-size:12px;border-radius:12px;padding:3px 12px}
+.m small{display:block;color:var(--mute);font-size:11px}
+.df{padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center}.df input{flex:1}
+.btn{background:var(--wine);color:#fff;border:0;border-radius:6px;padding:8px 14px}.btn.o{background:#fff;color:var(--wine);border:1px solid var(--wine)}.btn.g{background:var(--amber);color:#201508}
+.kb{display:grid;grid-template-columns:1fr 1.2fr;gap:16px}
+.dz{border:2px dashed var(--amber);border-radius:8px;padding:34px 14px;text-align:center;color:var(--mute);background:#FFFBF1}.dz b{display:block;color:var(--wine);font:600 20px 'Cormorant Garamond',serif}
+.pg{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:4px}.pg i{display:block;height:100%;background:var(--wa);width:0;transition:width .15s}
+.col{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.col>div{background:#E9E6E3;border-radius:8px;padding:10px;min-height:200px}.col h4{font-weight:600;padding:4px 6px 10px}
+.tk{background:#fff;border-radius:6px;padding:10px;margin-bottom:8px;box-shadow:0 1px 2px #0002}.tk small{display:block;color:var(--mute);margin:2px 0 6px}.tk button{float:right}
+.sw{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.sw input{accent-color:var(--wa);width:18px;height:18px}
+@media(max-width:900px){body{flex-direction:column}aside{width:100%;height:auto;position:static;flex-direction:row;flex-wrap:wrap}aside small,.back{display:none}.g2,.kb,.inbox,.col{grid-template-columns:1fr}.inbox{height:auto}.list{max-height:240px}.det{min-height:420px}main{padding:18px}}
+</style>
+</head>
+<body>
+<aside>
+  <div class="logo">spontea</div><small>Panel del asistente IA</small>
+  <button class="nav on" data-v="res">Resumen</button>
+  <button class="nav" data-v="conv">Conversaciones <i id="nc">0</i></button>
+  <button class="nav" data-v="tk">Tickets y escalado <i id="nt">0</i></button>
+  <button class="nav" data-v="kb">Base de conocimiento</button>
+  <a class="back" href="index.html" onclick="if(history.length>1){history.back();return false}">← Volver al demo</a>
+</aside>
+<main>
+<div class="top"><h1 id="tt">Resumen</h1><div><span class="pill">Datos ficticios de ejemplo</span> <select id="rg"><option value="0">Últimos 7 días</option><option value="1" selected>Últimos 30 días</option><option value="2">Últimos 90 días</option></select></div></div>
+<p class="sub" id="st"></p>
+
+<section class="v on" id="res">
+  <div class="kp" id="kp"></div>
+  <div class="g2">
+    <div class="card"><h3>Conversaciones por hora del día</h3><div class="bars" id="bh"></div><div class="ax"><span>00h</span><span>06h</span><span>12h</span><span>18h</span><span>23h</span></div><p class="sub" style="margin:8px 0 0;font-size:12px">En dorado: con la tienda cerrada. Aquí es donde el asistente trabaja solo.</p></div>
+    <div class="card"><h3>Del mensaje a la venta</h3><div id="fn"></div></div>
+  </div>
+  <div class="card"><h3>Carritos recuperados</h3><table><thead><tr><th>Cliente</th><th>Producto</th><th>Importe</th><th>Estado</th></tr></thead><tbody id="cr"></tbody></table></div>
+</section>
+
+<section class="v" id="conv">
+  <div class="inbox">
+    <div style="display:flex;flex-direction:column;min-height:0"><div class="chips" id="fl"></div><input type="text" id="q" placeholder="Buscar cliente o mensaje" style="margin-bottom:10px"><div class="list" id="ls"></div></div>
+    <div class="card det" id="dt"></div>
+  </div>
+</section>
+
+<section class="v" id="tk">
+  <div class="col" id="kb3"></div>
+  <div class="card" style="margin-top:16px"><h3>Cuándo pasa el asistente a una persona</h3><div id="rl"></div></div>
+</section>
+
+<section class="v" id="kb">
+  <div class="kb">
+    <div class="card"><h3>Subir conocimiento</h3><label class="dz"><b>Arrastra o elige un archivo</b>PDF, Word, Excel o texto. El asistente lo aprende en minutos.<input type="file" id="fi" hidden></label><p class="sub" style="margin:10px 0 0;font-size:12px">En esta demo el archivo no sale de tu navegador.</p></div>
+    <div class="card"><h3>Lo que el asistente sabe hoy</h3><table><tbody id="dc"></tbody></table></div>
+  </div>
+</section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const T={res:['Resumen','Lo que ha hecho el asistente por Spontea.'],conv:['Conversaciones','Todos los chats de WhatsApp, atendidos por el asistente o por tu equipo.'],tk:['Tickets y escalado','Casos que necesitan a una persona del equipo.'],kb:['Base de conocimiento','Los documentos con los que el asistente responde.']};
+document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.v').forEach(v=>v.classList.toggle('on',v.id===b.dataset.v));$('tt').textContent=T[b.dataset.v][0];$('st').textContent=T[b.dataset.v][1];$('rg').style.display=b.dataset.v==='res'?'':'none'});
+$('st').textContent=T.res[1];
+
+/* resumen */
+const K=[['Conversaciones atendidas',[118,412,1190],''],['Fuera de horario',[36,38,37],' %'],['Pedidos cerrados por el asistente',[16,57,163],''],['Carritos recuperados',[5,19,54],''],['Ventas del asistente',[1180,4210,12480],' €'],['Pasadas a una persona',[9,31,88],'']];
+const HR=[9,5,3,2,2,4,6,10,18,24,28,30,26,22,20,24,27,29,31,38,46,52,40,22];
+const FN=[['Mensajes recibidos',100],['Recomendación enviada',72],['Pedido iniciado',38],['Pago completado',21]];
+function res(){const r=+$('rg').value;$('kp').innerHTML=K.map(k=>`<div class="card"><b>${k[1][r].toLocaleString('es-ES')}${k[2]}</b><span>${k[0]}</span></div>`).join('');
+$('bh').innerHTML=HR.map((v,h)=>`<i class="${h<9||h>=21?'n':''}" style="height:${v*2.7}px" title="${h}h: ${v}"></i>`).join('');
+$('fn').innerHTML=FN.map(f=>`<div class="fn"><div style="width:${f[1]}%">${f[0]} · ${f[1]} %</div></div>`).join('')+'<p class="sub" style="font-size:12px;margin-top:10px">Cifras de ejemplo, no son resultados reales.</p>';
+$('cr').innerHTML=[['Laia S.','Pack Descubrimiento','29,90 €','Pagado','open'],['Pau R.','Rosé · caja de 6','26,40 €','Respondió','human'],['Nuria C.','Xarel·lo · 2 cajas','48,00 €','Pagado','open'],['Eric T.','Picapoll · caja de 6','26,40 €','Mensaje enviado','closed']].map(x=>`<tr><td>${x[0]}</td><td>${x[1]}</td><td>${x[2]}</td><td><span class="tag ${x[4]}">${x[3]}</span></td></tr>`).join('')}
+$('rg').onchange=res;res();
+
+/* conversaciones */
+const A='Asistente IA';
+let C=[
+{n:'Marta G.',s:'open',t:'23:47',m:[['c','Hola, ¿qué es Spontea exactamente?'],['a','No es vino ni kombucha: es una bebida de inspiración enológica, fermentada con mostos de uva del Penedès.'],['c','Quiero algo para unos mariscos esta noche'],['a','La Xarel·lo: fresca y vivaz. Hay stock y sale en 24-48 h. ¿Te dejo el pedido listo?']]},
+{n:'Restaurante La Barca',s:'human',t:'21:10',m:[['c','Queremos 24 cajas para el restaurante, ¿hay precio profesional?'],['a','Es un pedido de hostelería. Lo paso a una persona del equipo para que te dé las condiciones.'],['s','Conversación en manos del equipo']]},
+{n:'Jordi P.',s:'closed',t:'18:32',m:[['c','Quiero la caja de Rosé'],['a','Te dejo el pedido listo con el enlace de pago.'],['c','Pagado, gracias'],['a','Pedido #SP-2047 confirmado. Te aviso con el seguimiento por aquí.']]},
+{n:'Laia S.',s:'open',t:'19:10',m:[['a','Hola Laia, dejaste el Pack Descubrimiento en tu carrito. Si lo terminas hoy, el envío corre de nuestra parte.'],['c','Uy, se me olvidó. Lo termino ahora']]},
+{n:'Anna V.',s:'human',t:'12:05',m:[['c','Mi caja llegó con una botella rota'],['a','Siento lo ocurrido. Paso tu caso a una persona del equipo para solucionarlo hoy.'],['s','Conversación en manos del equipo']]},
+{n:'David R.',s:'closed',t:'Ayer',m:[['c','¿Cuánto tarda el envío a Valencia?'],['a','Entre 24 y 48 horas laborables. ¿Quieres que te deje el pedido listo?'],['c','Vale, gracias']]},
+{n:'Carlos M.',s:'open',t:'Ayer',m:[['c','¿Lleva alcohol?'],['a','Es de baja graduación alcohólica. Te confirmo el dato exacto de cada referencia en un momento.']]}];
+const SN={open:'Abierta',human:'Con persona',closed:'Cerrada'};let F='all',cur=0,Q='';
+function conv(){const cnt=s=>C.filter(c=>c.s===s).length;
+$('fl').innerHTML=[['all','Todas'],['open','Abiertas ('+cnt('open')+')'],['human','Con persona ('+cnt('human')+')'],['closed','Cerradas ('+cnt('closed')+')']].map(f=>`<button class="${F===f[0]?'on':''}" onclick="F='${f[0]}';conv()">${f[1]}</button>`).join('');
+$('nc').textContent=cnt('open')+cnt('human');
+const L=C.map((c,i)=>[c,i]).filter(([c])=>(F==='all'||c.s===F)&&(c.n+c.m.map(x=>x[1]).join(' ')).toLowerCase().includes(Q));
+$('ls').innerHTML=L.map(([c,i])=>`<button class="it ${i===cur?'on':''}" onclick="cur=${i};conv()"><b>${c.n}<span class="tag ${c.s}">${SN[c.s]}</span></b><small>${c.m[c.m.length-1][1]}</small></button>`).join('')||'<p class="sub">Sin resultados.</p>';
+const c=C[cur];
+$('dt').innerHTML=`<div class="dh"><div><b>${c.n}</b> <span class="tag ${c.s}">${SN[c.s]}</span><br><small style="color:var(--mute)">WhatsApp · última actividad ${c.t}</small></div><div>${c.s==='open'?'<button class="btn g" onclick="act(\'human\')">Tomar el control</button> <button class="btn o" onclick="act(\'closed\')">Cerrar</button>':c.s==='human'?'<button class="btn o" onclick="act(\'open\')">Devolver al asistente</button> <button class="btn" onclick="act(\'closed\')">Cerrar</button>':'<button class="btn o" onclick="act(\'open\')">Reabrir</button>'}</div></div>
+<div class="ms" id="ms">${c.m.map(m=>`<div class="m ${m[0]}">${m[1]}${'cap'.includes(m[0])&&m[0]!=='s'?`<small>${m[0]==='c'?c.n:m[0]==='a'?A:'Tu equipo'}</small>`:''}</div>`).join('')}</div>
+<div class="df">${c.s==='human'?'<input type="text" id="rp" placeholder="Escribe como tu equipo…" onkeydown="if(event.key===\'Enter\')send()"><button class="btn" onclick="send()">Enviar</button>':'<small style="color:var(--mute)">'+(c.s==='open'?'El asistente está atendiendo esta conversación.':'Conversación cerrada.')+'</small>'}</div>`;
+$('ms').scrollTop=1e5}
+function act(s){const c=C[cur];if(s==='human'){c.m.push(['s','Tu equipo ha tomado el control']);addTk(c.n)}if(s==='open'&&c.s==='human')c.m.push(['s','Devuelta al asistente']);c.s=s;conv()}
+function send(){const v=$('rp').value.trim();if(!v)return;C[cur].m.push(['p',v]);conv();$('rp').focus()}
+$('q').oninput=e=>{Q=e.target.value.toLowerCase();conv()};
+
+/* tickets */
+let TK=[['Pedido de hostelería · 24 cajas','Restaurante La Barca','Alta',0],['Botella dañada en el envío','Anna V.','Alta',1],['Factura con datos de empresa','Jordi P.','Media',0],['Cata para el equipo de un hotel','Hotel Mar','Media',1],['Cambio de dirección de envío','David R.','Baja',2],['Duda sobre ingredientes','Carlos M.','Baja',2]];
+const CL=['Nuevo','En curso','Resuelto'];
+function tk(){$('kb3').innerHTML=CL.map((n,i)=>`<div><h4>${n} (${TK.filter(t=>t[3]===i).length})</h4>${TK.map((t,j)=>t[3]===i?`<div class="tk"><b>${t[0]}</b><small>${t[1]}</small><span class="tag ${t[2]==='Alta'?'alta':''}">${t[2]}</span>${i<2?`<button class="btn o" onclick="TK[${j}][3]++;tk()">Mover →</button>`:''}</div>`:'').join('')}</div>`).join('');$('nt').textContent=TK.filter(t=>t[3]<2).length}
+function addTk(n){TK.unshift(['Conversación tomada por el equipo',n,'Media',0]);tk()}
+const RL=['Cuando el cliente pide hablar con una persona','Pedidos de hostelería o de más de 10 cajas','Quejas, devoluciones o producto dañado','Cuando el asistente no está seguro de la respuesta','Preguntas sobre alcohol y venta a menores'];
+$('rl').innerHTML=RL.map((r,i)=>`<label class="sw"><span>${r}</span><input type="checkbox" checked></label>`).join('');
+
+/* conocimiento */
+let DC=[['Catálogo y fichas de producto','PDF','Indexado'],['Maridajes: Xarel·lo, Rosé y Picapoll','PDF','Indexado'],['Política de envíos y devoluciones','Word','Indexado'],['Ni vino ni kombucha: el relato de la marca','PDF','Indexado'],['Preguntas frecuentes de clientes','Word','Indexado']];
+function kb(){$('dc').innerHTML=DC.map((d,i)=>`<tr><td><b>${d[0]}</b><br><small style="color:var(--mute)">${d[1]}</small></td><td>${d[2]==='Indexado'?'<span class="tag open">Indexado</span>':'<div class="pg"><i style="width:'+d[2]+'%"></i></div>'}</td><td><button class="btn o" onclick="DC.splice(${i},1);kb()">Quitar</button></td></tr>`).join('')}
+$('fi').onchange=e=>{const f=e.target.files[0];if(!f)return;const i=DC.push([f.name,(f.name.split('.').pop()||'').toUpperCase(),0])-1;kb();const t=setInterval(()=>{if(!DC[i]||typeof DC[i][2]!=='number'){clearInterval(t);return}DC[i][2]+=20;if(DC[i][2]>=100)DC[i][2]='Indexado';kb()},350);e.target.value=''};
+conv();tk();kb();
+</script>
+</body>
+</html>

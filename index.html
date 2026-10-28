@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spontea · Demo Asistente IA en WhatsApp</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--wine:#4A1526;--wine2:#6B2238;--amber:#C9892B;--stone:#F3F1EE;--ink:#201A1C;--mute:#7A7074;--wa:#128C5A;--line:#E2DDD8}
+*{box-sizing:border-box;margin:0}
+body{font-family:Inter,system-ui,sans-serif;color:var(--ink);line-height:1.55}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px 5vw;border-bottom:1px solid var(--line)}
+.logo{font:600 28px 'Cormorant Garamond',Georgia,serif;letter-spacing:.04em;color:var(--wine)}
+nav{display:flex;gap:28px;font-size:14px;color:var(--mute)}
+.hero{display:grid;grid-template-columns:1fr 1fr;min-height:76vh;background:var(--wine);color:#fff}
+.txt{padding:9vh 5vw;display:flex;flex-direction:column;justify-content:center;gap:22px}
+.hero h1{font:500 clamp(40px,5.5vw,72px)/1.02 'Cormorant Garamond',Georgia,serif}
+.hero p{max-width:44ch;color:#E7D6DB}
+.btn{align-self:flex-start;background:var(--amber);color:#201508;padding:14px 26px;font:600 14px Inter,sans-serif;border:0;border-radius:2px;cursor:pointer}
+.bottle{display:flex;align-items:flex-end;justify-content:center;gap:22px;padding:6vh 4vw;padding-right:min(420px,28vw);background:radial-gradient(circle at 45% 70%,var(--wine2),var(--wine) 70%)}
+.b{width:96px;border-radius:30px 30px 10px 10px;position:relative}
+.b::before{content:"";position:absolute;top:-34px;left:35px;width:26px;height:40px;background:inherit;border-radius:6px 6px 0 0}
+.b i{position:absolute;inset:38% 8% 16%;background:#FFFFFFE6;border-radius:3px;display:grid;place-items:center;font:600 14px 'Cormorant Garamond',serif;color:var(--wine);font-style:normal}
+.catalog{padding:64px 5vw 40px}
+.catalog h2{font:500 38px 'Cormorant Garamond',serif}
+.sub{color:var(--mute);margin:6px 0 30px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px}
+.card{background:var(--stone);padding:26px;display:flex;flex-direction:column;gap:6px}
+.card .sw{height:110px;margin-bottom:12px}
+.card b{font:600 22px 'Cormorant Garamond',serif}
+.card small{color:var(--mute)}
+.note{padding:0 5vw 120px;color:var(--mute);font-size:12px}
+#bar{position:fixed;left:18px;bottom:18px;z-index:20;display:flex;gap:8px;flex-wrap:wrap;max-width:calc(100vw - 260px)}
+#bar button{background:var(--wine);color:#fff;border:0;padding:11px 16px;border-radius:24px;font:500 13px Inter,sans-serif;cursor:pointer;box-shadow:0 4px 14px #0004}
+#bar button:hover{background:var(--wine2)}
+#fab{position:fixed;right:22px;bottom:22px;z-index:20;display:flex;align-items:center;gap:10px;background:var(--wa);color:#fff;border:0;border-radius:40px;padding:15px 22px;font:600 14px Inter,sans-serif;cursor:pointer;box-shadow:0 10px 30px #0003}
+#chat{position:fixed;right:22px;bottom:84px;z-index:21;width:min(390px,calc(100vw - 24px));height:min(640px,calc(100vh - 100px));background:#EFEAE2;border-radius:16px;overflow:hidden;display:none;flex-direction:column;box-shadow:0 24px 60px #0004}
+#chat.open{display:flex}
+.top{background:var(--wa);color:#fff;padding:12px 16px;display:flex;gap:12px;align-items:center}
+.av{width:40px;height:40px;border-radius:50%;background:var(--wine);display:grid;place-items:center;font:600 20px 'Cormorant Garamond',serif}
+.top small{display:block;opacity:.9;font-size:12px}
+.top button{margin-left:auto;background:none;border:0;color:#fff;font-size:24px;cursor:pointer}
+#ctx{background:#FFF3C9;color:#6B5200;font-size:12px;text-align:center;padding:5px}
+#msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
+#msgs>*{flex-shrink:0}
+.m{max-width:84%;padding:9px 12px;border-radius:10px;font-size:14px;box-shadow:0 1px 1px #0002}
+.bot{background:#fff;align-self:flex-start;border-top-left-radius:2px}
+.me{background:#D9F5C8;align-self:flex-end;border-top-right-radius:2px}
+.t{font-size:10px;color:var(--mute);text-align:right;margin-top:2px}
+.typing{display:flex;gap:4px;padding:13px 14px}
+.typing span{width:7px;height:7px;background:#999;border-radius:50%;animation:bl 1s infinite}
+.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+@keyframes bl{50%{opacity:.25}}
+.pc{background:#fff;align-self:flex-start;width:88%;border-radius:10px;overflow:hidden;box-shadow:0 2px 6px #0003;font-size:13px}
+.pc .sw{height:46px}.pc .in{padding:12px}
+.pc .l{display:flex;justify-content:space-between;padding:2px 0;color:var(--mute)}
+.pc .tot{display:flex;justify-content:space-between;border-top:1px solid var(--line);margin-top:8px;padding-top:8px;font-weight:600;color:var(--ink);font-size:15px}
+.pc .ok{color:var(--wa);font-weight:500}
+.pc button{display:block;width:100%;background:var(--wa);color:#fff;padding:13px;font:600 14px Inter,sans-serif;border:0;cursor:pointer}
+.pc small{display:block;text-align:center;padding:6px;color:var(--mute);font-size:11px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:10px 12px;background:#F7F5F1;border-top:1px solid var(--line);min-height:20px}
+.chips button{background:#fff;border:1px solid var(--wa);color:var(--wa);padding:8px 14px;border-radius:20px;font:500 13px Inter,sans-serif;cursor:pointer;text-align:left}
+.chips button:hover{background:var(--wa);color:#fff}
+@media(max-width:900px){.hero{grid-template-columns:1fr}.bottle{padding-right:4vw}nav{display:none}#bar{max-width:100%;bottom:80px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<header><span class="logo">spontea</span><nav><span>Nosotros</span><span>Nuestros productos</span><span>Noticias</span><span>Contacto</span></nav></header>
+<section class="hero">
+  <div class="txt">
+    <h1>Ni vino ni kombucha.</h1>
+    <p>La expresión de la uva a través de una fermentación distinta. Baja en alcohol, elaborada con mostos del Penedès y pensada para la mesa.</p>
+    <button class="btn" onclick="run(1)">Pedir por WhatsApp</button>
+  </div>
+  <div class="bottle" aria-hidden="true">
+    <div class="b" style="height:250px;background:#B8A24A"><i>Xarel·lo</i></div>
+    <div class="b" style="height:290px;background:#C77D8E"><i>Rosé</i></div>
+    <div class="b" style="height:230px;background:#7F9060"><i>Picapoll</i></div>
+  </div>
+</section>
+<section class="catalog">
+  <h2>Nuestra colección</h2>
+  <p class="sub">Caja de 6 botellas · envío en 24-48 h</p>
+  <div class="grid">
+    <div class="card"><div class="sw" style="background:#B8A24A"></div><b>Xarel·lo</b><small>Frescura y vivacidad de la uva blanca catalana</small></div>
+    <div class="card"><div class="sw" style="background:#C77D8E"></div><b>Rosé</b><small>Garnacha, Trepat y Sumoll del Penedès</small></div>
+    <div class="card"><div class="sw" style="background:#7F9060"></div><b>Picapoll</b><small>Fresca, expresiva, ligada a su origen</small></div>
+  </div>
+</section>
+<p class="note">Demo ilustrativo. Sabores y textos proceden de sponteadrinks.com; precios, stock, plazos y datos del panel son ficticios y se conectarán a la tienda real en la implementación.</p>
+
+<div id="bar">
+  <button onclick="run(1)">① Cliente nuevo, de noche</button>
+  <button onclick="run(2)">② Carrito abandonado</button>
+  <button onclick="location.href='dashboard.html'">③ Panel del cliente</button>
+</div>
+<button id="fab" onclick="run(1)">💬 Habla con Spontea</button>
+
+<div id="chat" role="dialog" aria-label="Chat con el asistente de Spontea">
+  <div class="top"><div class="av">S</div><div>Spontea · Asistente IA<small>en línea · responde al instante</small></div><button onclick="$('chat').classList.remove('open')" aria-label="Cerrar">×</button></div>
+  <div id="ctx"></div>
+  <div id="msgs"></div>
+  <div class="chips" id="chips"></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id),msgs=$('msgs'),chips=$('chips');
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const eur=n=>n.toFixed(2).replace('.',',')+' €';
+const P={
+ x:{n:'Xarel·lo',c:'#B8A24A',p:24,s:38,m:'mariscos, tapas y quesos frescos',d:'fresca y vivaz, la uva blanca más catalana'},
+ r:{n:'Rosé',c:'#C77D8E',p:26,s:21,m:'arroces, cocina asiática y embutidos',d:'delicada y compleja, con Garnacha, Trepat y Sumoll'},
+ p:{n:'Picapoll',c:'#7F9060',p:26,s:17,m:'pescado azul, ensaladas y encurtidos',d:'fresca y expresiva, muy ligada a su origen'},
+ k:{n:'Pack Descubrimiento',c:'#4A1526',p:29.9,s:54,m:'',d:'dos botellas de cada sabor'}
+};
+let mins=0,cart=[],run_id=0,busy=false,cur=1,free=false;
+const clock=()=>{const t=mins;return String(Math.floor(t/60)%24).padStart(2,'0')+':'+String(t%60).padStart(2,'0')};
+function add(cls,html){const d=document.createElement('div');d.className='m '+cls;d.innerHTML=html+'<div class="t">'+clock()+'</div>';msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;mins+=Math.random()<.5?1:0}
+async function bot(html,ms=900){
+  const id=run_id,t=document.createElement('div');t.className='m bot typing';t.innerHTML='<span></span><span></span><span></span>';
+  msgs.appendChild(t);msgs.scrollTop=msgs.scrollHeight;await wait(ms);t.remove();if(id!==run_id)throw 0;add('bot',html)
+}
+function setChips(l){chips.innerHTML='';l.forEach(([t,f])=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>say(t,f);chips.appendChild(b)})}
+async function say(t,f){if(busy)return;busy=true;chips.innerHTML='';add('me',t);try{await f()}catch(e){}finally{busy=false}}
+
+/* tarjeta de pedido */
+function checkout(){
+  const sub=cart.reduce((a,i)=>a+i.p,0),ship=(sub>=40||free)?0:4.9;
+  const lines=cart.map(i=>'<div class="l"><span>'+i.n+' · caja de 6</span><span>'+eur(i.p)+'</span></div>').join('');
+  const d=document.createElement('div');d.className='pc';
+  d.innerHTML='<div class="sw" style="background:'+cart[0].c+'"></div><div class="in"><b>Tu pedido</b>'+lines+'<div class="l"><span>Envío</span><span class="ok">'+(ship?eur(ship):'Gratis')+'</span></div><div class="tot"><span>Total</span><span>'+eur(sub+ship)+'</span></div></div><button onclick="pay(this)">Pagar ahora</button><small>Pago seguro con tarjeta, Apple Pay o Bizum</small>';
+  msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight
+}
+async function pay(btn){
+  btn.textContent='✓ Pago recibido';btn.disabled=true;btn.style.background='#0B6B45';
+  await bot('✓ Pedido <b>#SP-2047</b> confirmado. Sale mañana y te envío el seguimiento por aquí.',1000);
+  await bot('Si compras para un restaurante o una tienda, puedo avisar a nuestro distribuidor de tu zona.',900);
+  setChips([['Soy hostelería: avisar al distribuidor',dist],['Nada más, gracias',bye]])
+}
+async function dist(){await bot('Hecho. He pasado tus datos al distribuidor de tu zona y te escribirá mañana para coordinar una cata. 🍷',1000);setChips([['Gracias',bye]])}
+async function bye(){await bot('A ti. Estoy aquí a cualquier hora. 🌿',700);setChips([['Ver el otro escenario',()=>run(cur===1?2:1)],['Ver el panel del cliente',()=>{location.href='dashboard.html';return Promise.resolve()}]])}
+
+/* escenario 1 */
+const menu=()=>setChips([['¿Qué sabores hay?',flavors],['¿Con qué la maridan?',pairing],['Quiero pedir',pairing]]);
+async function what(){
+  await bot('Spontea no es vino ni kombucha: es una bebida de inspiración enológica, fermentada con mostos de uva del Penedès. Baja en alcohol y pensada para la mesa.');
+  menu()
+}
+async function flavors(){
+  await bot('Tres expresiones de uva:<br>• <b>Xarel·lo</b>: '+P.x.d+'<br>• <b>Rosé</b>: '+P.r.d+'<br>• <b>Picapoll</b>: '+P.p.d);
+  await bot('¿Te digo cuál va mejor con lo que sueles cenar?',700);pairing0()
+}
+async function pairing(){await bot('Claro. ¿Qué vas a poner en la mesa?',800);pairing0()}
+function pairing0(){setChips([['Marisco y tapas',()=>pick('x')],['Arroces o cocina asiática',()=>pick('r')],['Pescado azul y ensaladas',()=>pick('p')],['Probarlas todas',()=>pick('k')]])}
+async function pick(k){
+  const p=P[k];cart=[p];
+  if(k==='k')await bot('Para descubrirlas, el <b>Pack Descubrimiento</b>: '+p.d+'. Así eliges tu favorita sin riesgo.');
+  else await bot('Para eso, la <b>'+p.n+'</b>: '+p.d+'. Marida muy bien con '+p.m+'.');
+  await bot('✓ Hay stock ('+p.s+' cajas) y sale en 24-48 h.',700);
+  if(p.p<40){await bot('Con dos cajas el <b>envío es gratis</b> (desde 40 €). ¿Añado otra?',900);setChips([['Añadir otra caja',()=>more(k)],['Solo esta',()=>finish()]])}
+  else finish()
+}
+async function more(k){cart.push(P[k==='k'?'x':k]);await bot('Perfecto, una segunda caja y el envío corre de nuestra parte.',700);finish()}
+async function finish(){await bot('Te dejo el pedido listo, sin formularios:',700);checkout()}
+
+/* escenario 2: carrito abandonado */
+async function cart2(){
+  cart=[P.k];await bot('Con gusto. Va todo en una caja y ya lo tienes listo:',700);checkout()
+}
+async function pack2(){
+  await bot('Lleva '+P.k.d+': Xarel·lo, Rosé y Picapoll. La mejor forma de empezar, y ideal para regalar.');
+  setChips([['Terminar mi pedido',cart2],['¿Cuál va con marisco?',async()=>{await bot('La <b>Xarel·lo</b>: marida muy bien con mariscos y tapas. La tienes en el pack.');setChips([['Terminar mi pedido',cart2]])}]])
+}
+
+/* arranque */
+async function run(n){
+  run_id++;cur=n;free=(n===2);busy=true;msgs.innerHTML='';chips.innerHTML='';cart=[];$('chat').classList.add('open');
+  if(n===1){
+    mins=23*60+47;$('ctx').textContent='Simulación: domingo, 23:47 · tienda cerrada';
+    add('me','Hola, estoy viendo vuestra web. ¿Qué es Spontea exactamente?');
+    await bot('¡Hola! 👋 Soy el asistente de <b>Spontea</b>. Es domingo de noche y aun así estoy aquí para ayudarte.',1000);
+    await what()
+  }else{
+    mins=19*60+10;$('ctx').textContent='Simulación: martes, 19:10 · mensaje automático a un carrito abandonado';
+    await bot('Hola Marta 👋 Soy el asistente de <b>Spontea</b>. Vi que dejaste el <b>Pack Descubrimiento</b> en tu carrito. Si lo terminas hoy, el envío corre de nuestra parte. ¿Te resuelvo alguna duda?',1100);
+    setChips([['¿Qué lleva el pack?',pack2],['Quiero terminar el pedido',cart2]])
+  }
+  busy=false
+}
+</script>
+</body>
+</html>
